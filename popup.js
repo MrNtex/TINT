@@ -1,7 +1,7 @@
 
 const socialMediaDomains = [
   'facebook.com',
-  'twitter.com',
+  'x.com',
   'instagram.com',
   'linkedin.com',
   'youtube.com',
