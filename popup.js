@@ -155,20 +155,22 @@ function startRealTimeUpdates() {
 }
 
 function updateSiteInfo(siteName, isSocial, url) {
-	const siteNameElem = document.getElementById('site-name');
-	const siteStatusElem = document.getElementById('site-status');
-	
-	const friendlyName = getFriendlySiteName ? getFriendlySiteName(url) : siteName;
-	siteNameElem.textContent = friendlyName;
-	
-	if (isSocial) {
-		siteStatusElem.textContent = 'Social Media Site';
-		siteStatusElem.style.color = '#e4405f';
-		document.getElementById('site-info').className = `site-info site-${siteName.toLowerCase()}`;
-	} else {
-		siteStatusElem.textContent = 'Regular Website';
-		siteStatusElem.style.color = '#787774';
-	}
+		const siteNameElem = document.getElementById('site-name');
+		const siteStatusElem = document.getElementById('site-status');
+  
+		const friendlyName = getFriendlySiteName ? getFriendlySiteName(url) : siteName;
+		siteNameElem.innerHTML = '';
+		const nameSpan = document.createElement('span');
+		nameSpan.textContent = friendlyName;
+		siteNameElem.appendChild(nameSpan);
+		if (isSocial) {
+			siteStatusElem.innerHTML = '<span class="glow-dot" title="Tracking active"></span> Social Media Site';
+			siteStatusElem.style.color = '#e4405f';
+			document.getElementById('site-info').className = `site-info site-${siteName.toLowerCase()}`;
+		} else {
+			siteStatusElem.textContent = 'Regular Website';
+			siteStatusElem.style.color = '#787774';
+		}
 }
 
 async function updateSessionTime() {

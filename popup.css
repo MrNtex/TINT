@@ -1,3 +1,21 @@
+.glow-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e60000ff;
+  margin-right: 4px;
+  display: inline-block;
+  animation: glow 1.2s infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
 /* Reset and base styles */
 * {
   margin: 0;
