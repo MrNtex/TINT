@@ -31,9 +31,29 @@ function getDomainFromUrl(url) {
   }
 }
 
+
 let currentWebsite = null;
 let currentWebsiteSavedTime = 0;
 let currentSessionStartTime = null;
+
+// Load persisted state when service worker wakes up
+async function loadState() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(['currentWebsite', 'currentSessionStartTime'], (result) => {
+      currentWebsite = result.currentWebsite || null;
+      currentSessionStartTime = result.currentSessionStartTime || null;
+      if (currentWebsite) {
+        chrome.storage.local.get([currentWebsite], (res) => {
+          currentWebsiteSavedTime = res[currentWebsite] || 0;
+          resolve();
+        });
+      } else {
+        currentWebsiteSavedTime = 0;
+        resolve();
+      }
+    });
+  });
+}
 
 function startTracking(url) {
   const domain = getDomainFromUrl(url);
@@ -46,45 +66,52 @@ function startTracking(url) {
   
   currentWebsite = domain;
   currentSessionStartTime = Date.now();
+
+  // Service workers in manifest v3 are not stateful, so storing to storage
+  chrome.storage.local.set({ currentWebsite: currentWebsite, currentSessionStartTime: currentSessionStartTime });
   
   // Get existing time for this site from session storage
-  chrome.storage.session.get([domain], (result) => {
+  chrome.storage.local.get([domain], (result) => {
     currentWebsiteSavedTime = result[domain] || 0;
   });
 }
 
+
 function getTotalTime() {
-  if (!currentWebsite || !currentSessionStartTime) return 0;
+  if (!currentSessionStartTime) return currentWebsiteSavedTime;
   const elapsed = Math.floor((Date.now() - currentSessionStartTime) / 1000);
   return currentWebsiteSavedTime + elapsed;
 }
 
-function stopTracking() {
-  if (!currentWebsite || !currentSessionStartTime) return;
-  
-  const totalTime = getTotalTime();
+function save()
+{
+  if (!currentWebsite) return;
+  chrome.storage.local.set({ [currentWebsite]: getTotalTime() });
+}
 
-  chrome.storage.session.set({ [currentWebsite]: totalTime });
-  
+function stopTracking() {
+  save();
+
   currentWebsite = null;
   currentWebsiteSavedTime = 0;
   currentSessionStartTime = null;
 }
 
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "GET_TIME") {
-    const totalTime = getTotalTime();
-    const sessionTime = currentSessionStartTime ? Math.floor((Date.now() - currentSessionStartTime) / 1000) : 0;
-    
-    console.log(`GET_TIME request: currentWebsite=${currentWebsite}, totalTime=${totalTime}, sessionTime=${sessionTime}`);
-    
-    sendResponse({ 
-      totalTime: totalTime,
-      currentWebsite: currentWebsite,
-      sessionTime: sessionTime
+    loadState().then(() => {
+      const totalTime = getTotalTime();
+      const sessionTime = currentSessionStartTime ? Math.floor((Date.now() - currentSessionStartTime) / 1000) : 0;
+      console.log(`GET_TIME request: currentWebsite=${currentWebsite}, totalTime=${totalTime}, sessionTime=${sessionTime}`);
+      sendResponse({ 
+        totalTime: totalTime,
+        currentWebsite: currentWebsite,
+        sessionTime: sessionTime
+      });
     });
+    return true; // Keep message channel open for async response
   }
-  return true; // Keep message channel open for async response
 });
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
@@ -145,20 +172,9 @@ async function initializeTracking() {
   }
 }
 
-chrome.runtime.onStartup.addListener(() => {
-  currentWebsite = null;
-  currentWebsiteSavedTime = 0;
-  currentSessionStartTime = null;
-  
-  setTimeout(initializeTracking, 1000);
+
+
+// Load state before initializing tracking
+loadState().then(() => {
+  initializeTracking();
 });
-
-chrome.runtime.onInstalled.addListener(() => {
-  currentWebsite = null;
-  currentWebsiteSavedTime = 0;
-  currentSessionStartTime = null;
-
-  setTimeout(initializeTracking, 1000);
-});
-
-initializeTracking();
