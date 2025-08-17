@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>TINT - Social Media Time Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="header">
+      <div class="logo">
+        <span class="logo-icon">⏱️</span>
+        <span class="logo-text">TINT</span>
+      </div>
+      <div class="subtitle">Time Intelligence</div>
+    </div>
+    
+    <div class="content">
+      <div id="site-info" class="site-info">
+        <div class="site-name" id="site-name">Loading...</div>
+        <div class="site-status" id="site-status">Checking site...</div>
+      </div>
+      
+      <div class="time-display">
+        <div class="time-header">
+          <div class="time-label" id="time-label">Current Session</div>
+          <button class="toggle-btn" id="toggle-btn" title="Switch between current session and total time">
+            <span class="toggle-arrow">→</span>
+          </button>
+        </div>
+        <div class="time-value" id="time-value">--:--:--</div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">Session goal: 30 minutes</div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

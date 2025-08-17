@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Social Media Time Tracker",
+  "version": "1.0",
+  "description": "Track time spent on social media sites with session and total time statistics",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "*://*.facebook.com/*",
+    "*://*.twitter.com/*",
+    "*://*.instagram.com/*",
+    "*://*.linkedin.com/*",
+    "*://*.youtube.com/*",
+    "*://*.tiktok.com/*",
+    "*://*.reddit.com/*",
+    "*://*.snapchat.com/*",
+    "*://*.pinterest.com/*",
+    "*://*.whatsapp.com/*",
+    "*://*.telegram.org/*",
+    "*://*.discord.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Social Media Time Tracker",
+    "default_icon": "icon.png"
+  }
+}
