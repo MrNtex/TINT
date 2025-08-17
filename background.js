@@ -1,17 +1,4 @@
-const socialMediaDomains = [
-  'facebook.com',
-  'twitter.com',
-  'instagram.com',
-  'linkedin.com',
-  'youtube.com',
-  'tiktok.com',
-  'reddit.com',
-  'snapchat.com',
-  'pinterest.com',
-  'whatsapp.com',
-  'telegram.org',
-  'discord.com'
-];
+import { socialMediaDomains } from './config.js';
 
 function isSocialMediaSite(url) {
   try {

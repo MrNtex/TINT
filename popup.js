@@ -1,18 +1,5 @@
 
-const socialMediaDomains = [
-  'facebook.com',
-  'x.com',
-  'instagram.com',
-  'linkedin.com',
-  'youtube.com',
-  'tiktok.com',
-  'reddit.com',
-  'snapchat.com',
-  'pinterest.com',
-  'whatsapp.com',
-  'telegram.org',
-  'discord.com'
-];
+import { socialMediaDomains, friendlyNames, goals } from './config.js';
 
 function isSocialMediaSite(url) {
   try {
@@ -45,20 +32,6 @@ function getFriendlySiteName(url) {
     const domain = socialMediaDomains.find(domain => hostname.includes(domain));
     
     if (domain) {
-      const friendlyNames = {
-        'facebook.com': 'Facebook',
-        'twitter.com': 'Twitter',
-        'instagram.com': 'Instagram',
-        'linkedin.com': 'LinkedIn',
-        'youtube.com': 'YouTube',
-        'tiktok.com': 'TikTok',
-        'reddit.com': 'Reddit',
-        'snapchat.com': 'Snapchat',
-        'pinterest.com': 'Pinterest',
-        'whatsapp.com': 'WhatsApp',
-        'telegram.org': 'Telegram',
-        'discord.com': 'Discord'
-      };
       return friendlyNames[domain] || domain;
     }
     
@@ -119,12 +92,12 @@ function updateToggleDisplay() {
 	
 	if (showTotalTime) {
 		timeLabel.textContent = 'Total Session';
-		progressText.textContent = 'Total goal: 2 hours';
+		progressText.textContent = `Total goal: ${Math.floor(goals.total / 3600)} hours`;
 		toggleArrow.textContent = '←';
 		toggleArrow.style.transform = 'rotate(180deg)';
 	} else {
 		timeLabel.textContent = 'Current Session';
-		progressText.textContent = 'Session goal: 30 minutes';
+		progressText.textContent = `Session goal: ${Math.floor(goals.session / 60)} minutes`;
 		toggleArrow.textContent = '→';
 		toggleArrow.style.transform = 'rotate(0deg)';
 	}
@@ -178,21 +151,21 @@ async function updateSessionTime() {
 		const backgroundTime = await getBackgroundTime();
 		
 		let sessionSeconds = 0;
-		let goalSeconds = 1800;
+		let goalSeconds = goals.session;
 		
 		if (showTotalTime) {
 			if (backgroundTime && backgroundTime.currentWebsite === currentSiteName) {
 				sessionSeconds = backgroundTime.totalTime;
 			} else {
-				const result = await chrome.storage.session.get([currentSiteName]);
+				const result = await chrome.storage.local.get([currentSiteName]);
 				sessionSeconds = result[currentSiteName] || 0;
 			}
-			goalSeconds = 7200;
+			goalSeconds = goals.total;
 		} else {
 			if (backgroundTime && backgroundTime.currentWebsite === currentSiteName) {
 				sessionSeconds = backgroundTime.sessionTime;
 			}
-			goalSeconds = 1800;
+			goalSeconds = goals.session;
 		}
 		
 		document.getElementById('time-value').textContent = formatTime(sessionSeconds);
