@@ -172,7 +172,18 @@ async function initializeTracking() {
   }
 }
 
+// Save state before service worker is killed
+chrome.runtime.onSuspend.addListener(() => {
+  console.log("Service worker suspended, saving state...");
+  loadState().then(() => {
+    save();
+  });
+});
 
+// Periodic save in case of crashes/suspension
+setInterval(() => {
+  save();
+}, 10000);
 
 // Load state before initializing tracking
 loadState().then(() => {

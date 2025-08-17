@@ -70,7 +70,7 @@ function getFriendlySiteName(url) {
 
 let updateTimer;
 let currentSiteName = null;
-let showTotalTime = false;
+let showTotalTime = true;
 
 document.addEventListener('DOMContentLoaded', async () => {
 	try {
